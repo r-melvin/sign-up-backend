@@ -1,16 +1,28 @@
 package controllers
 
 import javax.inject._
+import models.UserDetailsModel
+import play.api.libs.json.{JsSuccess, JsValue}
 import play.api.mvc._
+import services.StoreUserDetailsService
+import services.StoreUserDetailsService.UserDetailsStored
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StoreUserDetailsController @Inject()(cc: ControllerComponents) extends AbstractController(cc) {
+class StoreUserDetailsController @Inject()(storeUserDetailsService: StoreUserDetailsService,
+                                           val controllerComponents: ControllerComponents
+                                          )(implicit ec: ExecutionContext) extends BaseController {
 
-  def storeUserDetails(): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(
-      NotImplemented
-    )
+  def storeUserDetails(requestId: String): Action[JsValue] = Action.async(parse.json) {
+    implicit request =>
+      request.body.validate[UserDetailsModel] match {
+        case JsSuccess(userDetails, _) =>
+          storeUserDetailsService.storeUserDetails(requestId, userDetails) map {
+            case Right(UserDetailsStored) => NoContent
+            case Left(_) => InternalServerError
+          }
+        case _ => Future.successful(BadRequest(request.body))
+      }
   }
 }
