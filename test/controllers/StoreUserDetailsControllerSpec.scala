@@ -1,21 +1,59 @@
 package controllers
 
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 import org.scalatestplus.play._
-import org.scalatestplus.play.guice._
-import play.api.test._
+import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
+import play.api.test._
+import services.mocks.MockStoreUserDetailsService
+import utils.TestConstants._
 
-class StoreUserDetailsControllerSpec extends PlaySpec with GuiceOneAppPerSuite {
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  object TestStoreUserDetailsController extends StoreUserDetailsController(stubControllerComponents())
+class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsService {
 
-  val testGetRequest = FakeRequest(GET, "/")
+  object TestStoreUserDetailsController extends StoreUserDetailsController(
+    mockStoreUserDetailsService,
+    stubControllerComponents()
+  )
 
-  "StoreUserDetailsController GET" should {
-    "return Not Implemented" in {
-      val home = TestStoreUserDetailsController.storeUserDetails()(testGetRequest)
+  implicit val system: ActorSystem = ActorSystem()
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
 
-      status(home) mustBe NOT_IMPLEMENTED
+  val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, s"/$testRequestId/store-user-details").withBody(
+    Json.toJson(testUserDetails)
+  )
+
+  "StoreUserDetailsController POST" should {
+    "return No Content" when {
+      "StoreUserDetailsService is successful" in {
+        mockStoreUserDetailsSuccess(testRequestId, testUserDetails)
+
+        val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
+
+        status(result) mustBe NO_CONTENT
+      }
+    }
+
+    "return Internal Server Error" when {
+      "StoreUserDetailsService fails" in {
+        mockStoreUserDetailsFailed(testRequestId, testUserDetails)
+
+        val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
+
+        status(result) mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "return Bad request" when {
+      "controller receives invalid JSON" in {
+        val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, s"/$testRequestId/store-user-details").withBody(Json.obj())
+
+        val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
+
+        status(result) mustBe BAD_REQUEST
+      }
     }
   }
 
