@@ -1,4 +1,4 @@
 # Routes
 
 # Store User Details
-POST           /:requestId/store-user-details                    controllers.StoreUserDetailsController.storeUserDetails(requestId: String)
+POST           /sign-up/store-user-details                    controllers.StoreUserDetailsController.storeUserDetails

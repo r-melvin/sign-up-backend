@@ -14,11 +14,11 @@ class StoreUserDetailsController @Inject()(storeUserDetailsService: StoreUserDet
                                            val controllerComponents: ControllerComponents
                                           )(implicit ec: ExecutionContext) extends BaseController {
 
-  def storeUserDetails(requestId: String): Action[JsValue] = Action.async(parse.json) {
+  def storeUserDetails(): Action[JsValue] = Action.async(parse.json) {
     implicit request =>
       request.body.validate[UserDetailsModel] match {
         case JsSuccess(userDetails, _) =>
-          storeUserDetailsService.storeUserDetails(requestId, userDetails) map {
+          storeUserDetailsService.storeUserDetails(userDetails) map {
             case Right(UserDetailsStored) => NoContent
             case Left(_) => InternalServerError
           }

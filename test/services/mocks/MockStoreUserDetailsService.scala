@@ -21,21 +21,16 @@ trait MockStoreUserDetailsService extends MockitoSugar with BeforeAndAfterEach {
     reset(mockStoreUserDetailsService)
   }
 
-  private def mockStoreUserDetailsService(requestId: String,
-                                          userDetails: UserDetailsModel,
-                                         )(response: Future[Either[StoreUserDetailsFailure.type, UserDetailsStored.type]]): Unit = {
-    when(mockStoreUserDetailsService.storeUserDetails(
-      ArgumentMatchers.eq(requestId),
-      ArgumentMatchers.eq(userDetails)
-    )(ArgumentMatchers.any[Request[_]])) thenReturn response
+  private def mockStoreUserDetailsService(userDetails: UserDetailsModel)(response: Future[Either[StoreUserDetailsFailure.type, UserDetailsStored.type]]): Unit = {
+    when(mockStoreUserDetailsService.storeUserDetails(ArgumentMatchers.eq(userDetails))(ArgumentMatchers.any[Request[_]])) thenReturn response
   }
 
-  def mockStoreUserDetailsSuccess(requestId: String, userDetails: UserDetailsModel): Unit = {
-    mockStoreUserDetailsService(requestId, userDetails)(Future.successful(Right(UserDetailsStored)))
+  def mockStoreUserDetailsSuccess(userDetails: UserDetailsModel): Unit = {
+    mockStoreUserDetailsService(userDetails)(Future.successful(Right(UserDetailsStored)))
   }
 
-  def mockStoreUserDetailsFailed(requestId: String, userDetails: UserDetailsModel): Unit = {
-    mockStoreUserDetailsService(requestId, userDetails)(Future.successful(Left(StoreUserDetailsFailure)))
+  def mockStoreUserDetailsFailed(userDetails: UserDetailsModel): Unit = {
+    mockStoreUserDetailsService(userDetails)(Future.successful(Left(StoreUserDetailsFailure)))
   }
 
 }
