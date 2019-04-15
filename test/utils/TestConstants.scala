@@ -14,6 +14,8 @@ object TestConstants {
 
   val testEmail = "rodney.trotter@trotter-independent-trading.com"
 
-  val testUserDetails = UserDetailsModel(testFirstName, testLastName, testEmail)
+  val testHashedPassword = "1234567"
+
+  val testUserDetails = UserDetailsModel(testFirstName, testLastName, testEmail, testHashedPassword)
 
 }

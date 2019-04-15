@@ -13,13 +13,14 @@ class UserDetailsModelSpec extends PlaySpec {
         |{
         |   "firstName": "Rodney",
         |   "lastName": "Trotter",
-        |   "email": "rodney.trotter@trotter-independent-trading.com"
+        |   "email": "rodney.trotter@trotter-independent-trading.com",
+        |   "hashedPassword": "1234567"
         |}
       """.stripMargin
     )
 
     "contain three fields" in {
-      testUserDetails mustEqual UserDetailsModel("Rodney", "Trotter", "rodney.trotter@trotter-independent-trading.com")
+      testUserDetails mustEqual UserDetailsModel(testFirstName, testLastName, testEmail, testHashedPassword)
     }
 
     "write to json" in {

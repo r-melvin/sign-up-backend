@@ -6,7 +6,7 @@ import play.api.mvc.Request
 import play.api.test.FakeRequest
 import repositories.mocks.MockAccountsRepository
 import services.StoreUserDetailsService._
-import utils.TestConstants.{testRequestId, testUserDetails}
+import utils.TestConstants.testUserDetails
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -21,13 +21,13 @@ class StoreUserDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
   implicit val request: Request[_] = FakeRequest()
 
   "StoreUserDetailsService" should {
-    val testJson: JsObject = Json.obj("_id" -> testRequestId) ++ Json.toJsObject(testUserDetails)
+    val testJson: JsObject = Json.toJsObject(testUserDetails)
 
     "return UserDetailsStored" when {
       "the repository has successful stored the details in mongo" in {
         mockInsertSuccess(testJson)
 
-        val result = TestStoreUserDetailsService.storeUserDetails(testRequestId, testUserDetails)
+        val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
 
         await(result) mustBe Right(UserDetailsStored)
       }
@@ -36,7 +36,7 @@ class StoreUserDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
       "when the repository has failed" in {
         mockInsertFailure(testJson)
 
-        val result = TestStoreUserDetailsService.storeUserDetails(testRequestId, testUserDetails)
+        val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
 
         await(result) mustBe Left(StoreUserDetailsFailure)
       }
