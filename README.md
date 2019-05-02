@@ -1,6 +1,6 @@
 # sign-up-backend
-Play backend
 
+# APIs
 POST /sign-up/store-user-details 
   - Endpoint to store users details in Mongo when they register through the frontend
   
@@ -15,3 +15,9 @@ PUT /sign-up/amend-user-details
 
 DELETE /sign-up/remove-user-details
   - Endpoint to delete user details from Mongo
+
+
+# About
+This is a backend microservice built with Scala using the Play Framework & ReactiveMongo
+
+To run locally with the frontend use command `sbt "run 9001"`
