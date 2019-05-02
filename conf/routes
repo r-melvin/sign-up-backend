@@ -2,3 +2,5 @@
 
 # Store User Details
 POST           /sign-up/store-user-details                    controllers.StoreUserDetailsController.storeUserDetails
+
+POST           /sign-up/check-login-details                   controllers.CheckLoginDetailsController.checkLoginDetails

@@ -2,16 +2,16 @@ package controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import org.scalatestplus.play._
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import play.api.test._
 import services.mocks.MockStoreUserDetailsService
 import utils.TestConstants._
+import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsService {
+class StoreUserDetailsControllerSpec extends UnitSpec with MockStoreUserDetailsService {
 
   object TestStoreUserDetailsController extends StoreUserDetailsController(
     mockStoreUserDetailsService,
@@ -38,7 +38,7 @@ class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsS
 
     "return Internal Server Error" when {
       "StoreUserDetailsService fails" in {
-        mockStoreUserDetailsFailed(testUserDetails)
+        mockStoreUserDetailsFailure(testUserDetails)
 
         val result = TestStoreUserDetailsController.storeUserDetails()(testPostRequest)
 

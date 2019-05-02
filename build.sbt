@@ -18,4 +18,4 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
   )
 
 libraryDependencies += guice
-libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.16.2-play27"
+libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.16.5-play27"

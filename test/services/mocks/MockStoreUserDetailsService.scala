@@ -21,7 +21,7 @@ trait MockStoreUserDetailsService extends MockitoSugar with BeforeAndAfterEach {
     reset(mockStoreUserDetailsService)
   }
 
-  private def mockStoreUserDetailsService(userDetails: UserDetailsModel)(response: Future[Either[StoreUserDetailsFailure.type, UserDetailsStored.type]]): Unit = {
+  private def mockStoreUserDetailsService(userDetails: UserDetailsModel)(response: Future[StoreUserDetailsResponse]): Unit = {
     when(mockStoreUserDetailsService.storeUserDetails(ArgumentMatchers.eq(userDetails))(ArgumentMatchers.any[Request[_]])) thenReturn response
   }
 
@@ -29,8 +29,8 @@ trait MockStoreUserDetailsService extends MockitoSugar with BeforeAndAfterEach {
     mockStoreUserDetailsService(userDetails)(Future.successful(Right(UserDetailsStored)))
   }
 
-  def mockStoreUserDetailsFailed(userDetails: UserDetailsModel): Unit = {
-    mockStoreUserDetailsService(userDetails)(Future.successful(Left(StoreUserDetailsFailure)))
+  def mockStoreUserDetailsFailure(userDetails: UserDetailsModel): Unit = {
+    mockStoreUserDetailsService(userDetails)(Future.successful(Left(DatabaseFailure)))
   }
 
 }

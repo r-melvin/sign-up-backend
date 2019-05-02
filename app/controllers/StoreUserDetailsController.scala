@@ -1,6 +1,6 @@
 package controllers
 
-import javax.inject._
+import javax.inject.{Inject, Singleton}
 import models.UserDetailsModel
 import play.api.libs.json.{JsSuccess, JsValue}
 import play.api.mvc._

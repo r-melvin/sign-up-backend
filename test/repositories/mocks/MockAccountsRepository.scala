@@ -29,4 +29,16 @@ trait MockAccountsRepository extends MockitoSugar with BeforeAndAfterEach {
     when(mockAccountsRepository.insert(ArgumentMatchers.eq(json))) thenReturn Future.failed(new Exception)
   }
 
+  def mockFindByFieldSuccess(json: JsObject): Unit = {
+    when(mockAccountsRepository.findByField(ArgumentMatchers.eq(json))) thenReturn Future.successful(Some(json))
+  }
+
+  def mockFindByFieldNotFoundFailure(json: JsObject): Unit = {
+    when(mockAccountsRepository.findByField(ArgumentMatchers.eq(json))) thenReturn Future.failed(new NoSuchElementException)
+  }
+
+  def mockFindByFieldFailure(json: JsObject): Unit = {
+    when(mockAccountsRepository.findByField(ArgumentMatchers.eq(json))) thenReturn Future.failed(new Exception)
+  }
+
 }

@@ -19,7 +19,7 @@ class UserDetailsModelSpec extends PlaySpec {
       """.stripMargin
     )
 
-    "contain three fields" in {
+    "contain 4 fields" in {
       testUserDetails mustEqual UserDetailsModel(testFirstName, testLastName, testEmail, testHashedPassword)
     }
 

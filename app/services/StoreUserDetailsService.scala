@@ -13,13 +13,12 @@ class StoreUserDetailsService @Inject()(accountsRepository: AccountsRepository)(
 
   import StoreUserDetailsService._
 
-  def storeUserDetails(userDetails: UserDetailsModel
-                      )(implicit request: Request[_]): Future[Either[StoreUserDetailsFailure.type, UserDetailsStored.type]] = {
+  def storeUserDetails(userDetails: UserDetailsModel)(implicit request: Request[_]): Future[StoreUserDetailsResponse] = {
 
     accountsRepository.insert(Json.toJsObject(userDetails)) map {
       _ => Right(UserDetailsStored)
     } recover {
-      case _ => Left(StoreUserDetailsFailure)
+      case _ => Left(DatabaseFailure)
     }
 
   }
@@ -27,8 +26,10 @@ class StoreUserDetailsService @Inject()(accountsRepository: AccountsRepository)(
 
 object StoreUserDetailsService {
 
+  type StoreUserDetailsResponse = Either[DatabaseFailure.type, UserDetailsStored.type]
+
   case object UserDetailsStored
 
-  case object StoreUserDetailsFailure
+  case object DatabaseFailure
 
 }

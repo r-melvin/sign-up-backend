@@ -1,12 +1,8 @@
 package utils
 
-import java.util.UUID
-
-import models.UserDetailsModel
+import models.{LoginDetailsModel, UserDetailsModel}
 
 object TestConstants {
-
-  val testRequestId: String = UUID.randomUUID().toString
 
   val testFirstName = "Rodney"
 
@@ -17,5 +13,7 @@ object TestConstants {
   val testHashedPassword = "1234567"
 
   val testUserDetails = UserDetailsModel(testFirstName, testLastName, testEmail, testHashedPassword)
+
+  val testLoginDetails = LoginDetailsModel(testEmail, testHashedPassword)
 
 }
