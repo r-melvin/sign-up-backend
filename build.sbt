@@ -13,9 +13,17 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
   .configs(IntegrationTest)
   .settings(
     Defaults.itSettings,
+    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
     libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.1" % "it,test",
-    libraryDependencies += "org.mockito" % "mockito-core" % "2.25.1" % "it,test"
+    libraryDependencies += "org.mockito" % "mockito-core" % "2.25.1" % "it,test",
+    libraryDependencies += "com.github.tomakehurst" % "wiremock" % "2.23.2" % "it,test"
   )
 
 libraryDependencies += guice
 libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.16.5-play27"
+
+coverageMinimum := 80
+
+coverageHighlighting := true
+
+coverageExcludedPackages := "<empty>;Reverse.*;router\\.*"
