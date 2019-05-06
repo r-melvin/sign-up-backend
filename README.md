@@ -20,4 +20,4 @@ DELETE /sign-up/remove-user-details
 # About
 This is a backend microservice built with Scala using the Play Framework & ReactiveMongo
 
-To run locally with the frontend use command `sbt "run 9001"`
+To run locally, use command `sbt "run 9001"`
