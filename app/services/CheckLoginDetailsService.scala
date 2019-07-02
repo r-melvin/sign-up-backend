@@ -2,7 +2,7 @@ package services
 
 import javax.inject.{Inject, Singleton}
 import models.LoginDetailsModel
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.mvc.Request
 import repositories.AccountsRepository
 
@@ -13,24 +13,36 @@ class CheckLoginDetailsService @Inject()(accountsRepository: AccountsRepository)
 
   import CheckLoginDetailsService._
 
-  def checkLoginDetails(loginDetails: LoginDetailsModel)(implicit request: Request[_]): Future[CheckLoginDetailsResponse] = {
+  private def matchLoginDetails(enteredLoginDetails: LoginDetailsModel, retrievedLoginDetails: LoginDetailsModel): CheckLoginDetailsResponse = {
+    if (retrievedLoginDetails == enteredLoginDetails) {
+      Right(LoginDetailsMatch)
+    }
+    else {
+      Left(LoginDetailsDoNotMatch)
+    }
+  }
 
-    accountsRepository.findByField(Json.toJsObject(loginDetails)) map {
-     _ => Right(LoginDetailsFound)
+  def checkLoginDetails(id: String, enteredLoginDetails: LoginDetailsModel)(implicit request: Request[_]): Future[CheckLoginDetailsResponse] = {
+
+    accountsRepository.findById(id) map {
+      case Some(result) => matchLoginDetails(enteredLoginDetails, Json.fromJson[LoginDetailsModel](result).get)
     } recover {
       case e: NoSuchElementException => Left(LoginDetailsNotFound)
       case _ => Left(DatabaseFailure)
     }
   }
+
 }
 
 object CheckLoginDetailsService {
 
-  type CheckLoginDetailsResponse = Either[CheckLoginDetailsFailure, LoginDetailsFound.type]
+  type CheckLoginDetailsResponse = Either[CheckLoginDetailsFailure, LoginDetailsMatch.type]
 
   sealed trait CheckLoginDetailsFailure
 
-  case object LoginDetailsFound
+  case object LoginDetailsMatch
+
+  case object LoginDetailsDoNotMatch extends CheckLoginDetailsFailure
 
   case object LoginDetailsNotFound extends CheckLoginDetailsFailure
 

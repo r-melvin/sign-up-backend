@@ -5,7 +5,7 @@ import play.api.mvc.Request
 import play.api.test.FakeRequest
 import repositories.mocks.MockAccountsRepository
 import services.StoreUserDetailsService._
-import utils.TestConstants.testUserDetails
+import utils.TestConstants._
 import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,9 +21,9 @@ class StoreUserDetailsServiceSpec extends UnitSpec with MockAccountsRepository {
 
     "return UserDetailsStored" when {
       "the repository has successful stored the details in mongo" in {
-        mockInsertSuccess(testJson)
+        mockInsertSuccess(testRequestId, testJson)
 
-        val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
+        val result = TestStoreUserDetailsService.storeUserDetails(testRequestId, testUserDetails)
 
         await(result) mustBe Right(UserDetailsStored)
       }
@@ -31,9 +31,9 @@ class StoreUserDetailsServiceSpec extends UnitSpec with MockAccountsRepository {
 
     "return DatabaseFailure" when {
       "the repository has failed" in {
-        mockInsertFailure(testJson)
+        mockInsertFailure(testRequestId, testJson)
 
-        val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
+        val result = TestStoreUserDetailsService.storeUserDetails(testRequestId, testUserDetails)
 
         await(result) mustBe Left(DatabaseFailure)
       }

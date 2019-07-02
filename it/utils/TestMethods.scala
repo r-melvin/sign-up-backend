@@ -3,15 +3,18 @@ package utils
 import java.nio.charset.Charset
 
 import akka.stream.Materializer
+import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsValue, Json, Reads}
+import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-trait UnitSpec extends PlaySpec {
+
+trait TestMethods extends PlaySpec {
 
   implicit val defaultTimeout: FiniteDuration = 5 seconds
 
@@ -40,5 +43,29 @@ trait UnitSpec extends PlaySpec {
   def bodyOf(resultF: Future[Result])(implicit mat: Materializer): Future[String] = {
     resultF.map(bodyOf)
   }
+
+  def httpStatus(expectedValue: Int): HavePropertyMatcher[WSResponse, Int] =
+    (response: WSResponse) => HavePropertyMatchResult(
+      response.status == expectedValue,
+      "httpStatus",
+      expectedValue,
+      response.status
+    )
+
+  def jsonBodyAs[T](expectedValue: T)(implicit reads: Reads[T]): HavePropertyMatcher[WSResponse, T] =
+    (response: WSResponse) => HavePropertyMatchResult(
+      response.json.as[T] == expectedValue,
+      "jsonBodyAs",
+      expectedValue,
+      response.json.as[T]
+    )
+
+  val emptyBody: HavePropertyMatcher[WSResponse, String] =
+    (response: WSResponse) => HavePropertyMatchResult(
+      response.body == "",
+      "emptyBody",
+      "",
+      response.body
+    )
 
 }

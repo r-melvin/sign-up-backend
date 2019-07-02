@@ -5,7 +5,7 @@ import models.LoginDetailsModel
 import play.api.libs.json.{JsSuccess, JsValue}
 import play.api.mvc._
 import services.CheckLoginDetailsService
-import services.CheckLoginDetailsService.{LoginDetailsFound, LoginDetailsNotFound}
+import services.CheckLoginDetailsService.{LoginDetailsMatch, LoginDetailsDoNotMatch, LoginDetailsNotFound}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -14,12 +14,13 @@ class CheckLoginDetailsController @Inject()(checkLoginDetailsService: CheckLogin
                                             val controllerComponents: ControllerComponents
                                            )(implicit ec: ExecutionContext) extends BaseController {
 
-  def checkLoginDetails(): Action[JsValue] = Action.async(parse.json) {
+  def checkLoginDetails(id: String): Action[JsValue] = Action.async(parse.json) {
     implicit request =>
       request.body.validate[LoginDetailsModel] match {
         case JsSuccess(loginDetails, _) =>
-          checkLoginDetailsService.checkLoginDetails(loginDetails) map {
-            case Right(LoginDetailsFound) => NoContent
+          checkLoginDetailsService.checkLoginDetails(id, loginDetails) map {
+            case Right(LoginDetailsMatch) => NoContent
+            case Left(LoginDetailsDoNotMatch) => Forbidden
             case Left(LoginDetailsNotFound) => NotFound
             case Left(_) => InternalServerError
           }

@@ -1,12 +1,24 @@
 package models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
 
+case class UserDetailsModel(firstName: String, lastName: String, loginDetails: LoginDetailsModel)
 
-case class UserDetailsModel(firstName: String,
-                            lastName: String,
-                            email: String,
-                            hashedPassword: String
-                           )
+object UserDetailsModel {
 
-object UserDetailsModel { implicit val format: OFormat[UserDetailsModel] = Json.format[UserDetailsModel] }
+  implicit val reads: Reads[UserDetailsModel] = (json: JsValue) => for {
+    firstName <- (json \ "firstName").validate[String]
+    lastName <- (json \ "lastName").validate[String]
+    email <- (json \ "email").validate[String]
+    hashedPassword <- (json \ "hashedPassword").validate[String]
+  } yield {
+    UserDetailsModel(firstName, lastName, LoginDetailsModel(email, hashedPassword))
+  }
+
+    implicit val writes: OWrites[UserDetailsModel] = (userDetails: UserDetailsModel) => Json.obj(
+      "firstName" -> userDetails.firstName,
+      "lastName" -> userDetails.lastName,
+      "email" -> userDetails.loginDetails.email,
+      "hashedPassword" -> userDetails.loginDetails.hashedPassword
+    )
+  }

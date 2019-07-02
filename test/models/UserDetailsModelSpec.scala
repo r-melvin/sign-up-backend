@@ -1,26 +1,22 @@
 package models
 
-import org.scalatestplus.play.PlaySpec
 import play.api.libs.json._
 import utils.TestConstants._
+import utils.UnitSpec
 
-class UserDetailsModelSpec extends PlaySpec {
+class UserDetailsModelSpec extends UnitSpec {
 
   "UserDetailsModel" should {
 
-    val testJson = Json.parse(
-      """
-        |{
-        |   "firstName": "Rodney",
-        |   "lastName": "Trotter",
-        |   "email": "rodney.trotter@trotter-independent-trading.com",
-        |   "hashedPassword": "1234567"
-        |}
-      """.stripMargin
+    val testJson = Json.obj(
+      "firstName" -> testFirstName,
+      "lastName" -> testLastName,
+      "email" -> testEmail,
+      "hashedPassword" -> testPassword
     )
 
-    "contain 4 fields" in {
-      testUserDetails mustEqual UserDetailsModel(testFirstName, testLastName, testEmail, testHashedPassword)
+    "contain 3 fields" in {
+      testUserDetails mustEqual UserDetailsModel(testFirstName, testLastName, testLoginDetails)
     }
 
     "write to json" in {

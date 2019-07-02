@@ -4,12 +4,10 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
-import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.{Application, Environment, Mode}
 
-
-trait IntegrationSpec extends UnitSpec with GuiceOneServerPerSuite
-  with WiremockHelper with BeforeAndAfterAll with BeforeAndAfterEach {
+trait IntegrationSpecBase extends TestMethods with WiremockHelper with GuiceOneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
   lazy val ws = app.injector.instanceOf[WSClient]
 
@@ -23,8 +21,7 @@ trait IntegrationSpec extends UnitSpec with GuiceOneServerPerSuite
   val mockUrl = s"http://$mockHost:$mockPort"
 
   def config: Map[String, String] = Map(
-    "sign-up-frontend.host" -> mockHost,
-    "sign-up-frontend.port" -> mockPort
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
   )
 
   override def beforeAll(): Unit = {
@@ -32,14 +29,14 @@ trait IntegrationSpec extends UnitSpec with GuiceOneServerPerSuite
     startWiremock()
   }
 
+  override def afterAll(): Unit = {
+    super.afterAll()
+    stopWiremock()
+  }
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     resetWiremock()
-  }
-
-  override def afterAll(): Unit = {
-    stopWiremock()
-    super.afterAll()
   }
 
   def get[T](uri: String): WSResponse = {
@@ -68,7 +65,8 @@ trait IntegrationSpec extends UnitSpec with GuiceOneServerPerSuite
     )
   }
 
-  def buildClient(path: String): WSRequest =
-    ws.url(s"http://localhost:$port/sign-up$path").withFollowRedirects(false)
+  val baseUrl: String = "/sign-up"
+
+  def buildClient(path: String) = ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
 
 }

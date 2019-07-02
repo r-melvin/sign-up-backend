@@ -4,13 +4,13 @@ import java.util.UUID
 
 import models.{LoginDetailsModel, UserDetailsModel}
 
-object TestConstants {
-
-  val testRequestId = UUID.randomUUID().toString
+object IntegrationTestConstants {
 
   val testFirstName = UUID.randomUUID().toString
 
   val testLastName = UUID.randomUUID().toString
+
+  val testId = UUID.randomUUID().toString
 
   val testEmail = UUID.randomUUID().toString
 
@@ -18,8 +18,6 @@ object TestConstants {
 
   val testLoginDetails = LoginDetailsModel(testEmail, testPassword)
 
-  val testUserDetails = UserDetailsModel(testFirstName, testLastName, testLoginDetails)
-
-  val testInvalidLoginDetails = LoginDetailsModel("qwertyu", "qwertyuiop")
+  val testUserDetailsModel = UserDetailsModel(testFirstName, testLastName, testLoginDetails)
 
 }

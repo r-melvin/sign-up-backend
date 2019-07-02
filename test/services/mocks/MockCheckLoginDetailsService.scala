@@ -21,22 +21,27 @@ trait MockCheckLoginDetailsService extends MockitoSugar with BeforeAndAfterEach 
     reset(mockCheckLoginDetailsService)
   }
 
-  private def mockCheckLoginDetailsService(loginDetails: LoginDetailsModel)(response: Future[CheckLoginDetailsResponse]): Unit = {
+  private def mockCheckLoginDetailsService(id: String, loginDetails: LoginDetailsModel)(response: Future[CheckLoginDetailsResponse]): Unit = {
     when(mockCheckLoginDetailsService.checkLoginDetails(
+      ArgumentMatchers.eq(id),
       ArgumentMatchers.eq(loginDetails)
     )(ArgumentMatchers.any[Request[_]])) thenReturn response
   }
 
-  def mockCheckLoginDetailsSuccess(loginDetails: LoginDetailsModel): Unit = {
-    mockCheckLoginDetailsService(loginDetails)(Future.successful(Right(LoginDetailsFound)))
+  def mockCheckLoginDetailsSuccess(id: String, loginDetails: LoginDetailsModel): Unit = {
+    mockCheckLoginDetailsService(id, loginDetails)(Future.successful(Right(LoginDetailsMatch)))
   }
 
-  def mockCheckLoginDetailsFailure(loginDetails: LoginDetailsModel): Unit = {
-    mockCheckLoginDetailsService(loginDetails)(Future.successful(Left(LoginDetailsNotFound)))
+  def mockCheckLoginDetailsDoNotMatchFailure(id: String, loginDetails: LoginDetailsModel): Unit = {
+    mockCheckLoginDetailsService(id, loginDetails)(Future.successful(Left(LoginDetailsDoNotMatch)))
   }
 
-  def mockCheckLoginDetailsDatabaseFailure(loginDetails: LoginDetailsModel): Unit = {
-    mockCheckLoginDetailsService(loginDetails)(Future.successful(Left(DatabaseFailure)))
+  def mockCheckLoginDetailsNotFoundFailure(id: String, loginDetails: LoginDetailsModel): Unit = {
+    mockCheckLoginDetailsService(id, loginDetails)(Future.successful(Left(LoginDetailsNotFound)))
+  }
+
+  def mockCheckLoginDetailsDatabaseFailure(id: String, loginDetails: LoginDetailsModel): Unit = {
+    mockCheckLoginDetailsService(id, loginDetails)(Future.successful(Left(DatabaseFailure)))
   }
 
 }

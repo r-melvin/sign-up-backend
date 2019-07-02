@@ -4,8 +4,8 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import repositories.mocks.MockAccountsRepository
-import services.CheckLoginDetailsService.{DatabaseFailure, LoginDetailsFound, LoginDetailsNotFound}
-import utils.TestConstants.testLoginDetails
+import services.CheckLoginDetailsService._
+import utils.TestConstants._
 import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,19 +21,31 @@ class CheckLoginDetailsServiceSpec extends UnitSpec with MockAccountsRepository 
 
     "return LoginDetailsMatch" when {
       "the provided details match those stored in mongo" in {
-        mockFindByFieldSuccess(testJson)
+        mockFindByIdSuccess(testRequestId, testJson)
 
-        val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
+        val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
 
-        await(result) mustBe Right(LoginDetailsFound)
+        await(result) mustBe Right(LoginDetailsMatch)
+      }
+    }
+
+    "return LoginDetailsDoNotMatch" when {
+      "the provided details could not be found in mongo" in {
+        val testJson = Json.toJsObject(testInvalidLoginDetails)
+
+        mockFindByIdSuccess(testRequestId, testJson)
+
+        val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
+
+        await(result) mustBe Left(LoginDetailsDoNotMatch)
       }
     }
 
     "return LoginDetailsNotFound" when {
       "the provided details could not be found in mongo" in {
-        mockFindByFieldNotFoundFailure(testJson)
+        mockFindByIdNotFoundFailure(testRequestId)
 
-        val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
+        val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
 
         await(result) mustBe Left(LoginDetailsNotFound)
       }
@@ -41,9 +53,9 @@ class CheckLoginDetailsServiceSpec extends UnitSpec with MockAccountsRepository 
 
     "return DatabaseFailure" when {
       "the repository fails" in {
-        mockFindByFieldFailure(testJson)
+        mockFindByIdFailure(testRequestId)
 
-        val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
+        val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
 
         await(result) mustBe Left(DatabaseFailure)
       }
