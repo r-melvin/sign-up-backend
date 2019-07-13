@@ -2,16 +2,18 @@ package controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import play.api.test._
+import services.CheckLoginDetailsService.{DatabaseFailure, LoginDetailsDoNotMatch, LoginDetailsMatch, LoginDetailsNotFound}
 import services.mocks.MockCheckLoginDetailsService
 import utils.TestConstants._
-import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class CheckLoginDetailsControllerSpec extends UnitSpec with MockCheckLoginDetailsService {
+class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetailsService {
 
   object TestCheckLoginDetailsController extends CheckLoginDetailsController(
     mockCheckLoginDetailsService,
@@ -20,15 +22,14 @@ class CheckLoginDetailsControllerSpec extends UnitSpec with MockCheckLoginDetail
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-  val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/check-login-details").withBody(
+  implicit val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/check-login-details").withBody(
     Json.toJson(testLoginDetails)
   )
 
   "CheckLoginDetailsController POST" should {
     "return No Content" when {
       "CheckLoginDetailsControllerService has found the details" in {
-        mockCheckLoginDetailsSuccess(testRequestId, testLoginDetails)
+        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Right(LoginDetailsMatch)))
 
         val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
 
@@ -38,7 +39,7 @@ class CheckLoginDetailsControllerSpec extends UnitSpec with MockCheckLoginDetail
 
     "return Forbidden" when {
       "CheckLoginDetailsControllerService has found the details and the details do not match" in {
-        mockCheckLoginDetailsDoNotMatchFailure(testRequestId, testLoginDetails)
+        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Left(LoginDetailsDoNotMatch)))
 
         val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
 
@@ -48,7 +49,7 @@ class CheckLoginDetailsControllerSpec extends UnitSpec with MockCheckLoginDetail
 
     "return Not Found" when {
       "CheckLoginDetailsControllerService has not found the details" in {
-        mockCheckLoginDetailsNotFoundFailure(testRequestId, testLoginDetails)
+        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Left(LoginDetailsNotFound)))
 
         val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
 
@@ -58,7 +59,7 @@ class CheckLoginDetailsControllerSpec extends UnitSpec with MockCheckLoginDetail
 
     "return Internal Server Error" when {
       "CheckLoginDetailsControllerService fails" in {
-        mockCheckLoginDetailsDatabaseFailure(testRequestId, testLoginDetails)
+        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Left(DatabaseFailure)))
 
         val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
 

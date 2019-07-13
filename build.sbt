@@ -1,47 +1,32 @@
-import sbt.Keys.libraryDependencies
+val appName = "sign-up-backend"
 
-name := """sign-up-backend"""
-organization := "com.ben10"
+lazy val scoverageSettings = {
+  import scoverage.ScoverageKeys
 
-routesGenerator := InjectedRoutesGenerator
+  Seq(
+    ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;router\\.*",
+    ScoverageKeys.coverageMinimum := 90,
+    ScoverageKeys.coverageFailOnMinimum := false,
+    ScoverageKeys.coverageHighlighting := true
+  )
+}
 
-version := "1.0-SNAPSHOT"
-
-scalaVersion := "2.12.8"
-
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val microservice = Project(appName, file("."))
+  .enablePlugins(play.sbt.PlayScala)
   .configs(IntegrationTest)
   .settings(
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
+    dependencyOverrides ++= AppDependencies.overrides,
+    scoverageSettings,
     Defaults.itSettings,
-    unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value,
-    libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.1" % "it,test",
-    libraryDependencies += "org.mockito" % "mockito-core" % "2.25.1" % "it,test",
-    libraryDependencies += "com.github.tomakehurst" % "wiremock" % "2.23.2" % "it,test"
+    PlayKeys.playDefaultPort := 9001
   )
 
-libraryDependencies += guice
-libraryDependencies += "org.reactivemongo" %% "play2-reactivemongo" % "0.16.5-play27"
+Keys.fork in Test := true
+javaOptions in Test += "-Dlogger.resource=logback.xml"
+parallelExecution in Test := true
 
-val jettyVersion = "9.2.13.v20150730"
-dependencyOverrides ++= Set(
-  "org.eclipse.jetty" % "jetty-server" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-servlet" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-security" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-servlets" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-continuation" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-webapp" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-xml" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-client" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-http" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-io" % jettyVersion,
-  "org.eclipse.jetty" % "jetty-util" % jettyVersion,
-  "org.eclipse.jetty.websocket" % "websocket-api" % jettyVersion,
-  "org.eclipse.jetty.websocket" % "websocket-common" % jettyVersion,
-  "org.eclipse.jetty.websocket" % "websocket-client" % jettyVersion
-)
-
-coverageMinimum := 80
-
-coverageHighlighting := true
-
-coverageExcludedPackages := "<empty>;Reverse.*;router\\.*"
+Keys.fork in IntegrationTest := true
+unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value
+javaOptions in IntegrationTest += "-Dlogger.resource=logback.xml"
+parallelExecution in IntegrationTest := false

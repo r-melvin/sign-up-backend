@@ -2,16 +2,18 @@ package controllers
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
 import play.api.test._
+import services.StoreUserDetailsService.{DatabaseFailure, UserDetailsStored}
 import services.mocks.MockStoreUserDetailsService
 import utils.TestConstants._
-import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class StoreUserDetailsControllerSpec extends UnitSpec with MockStoreUserDetailsService {
+class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsService {
 
   object TestStoreUserDetailsController extends StoreUserDetailsController(
     mockStoreUserDetailsService,
@@ -20,15 +22,14 @@ class StoreUserDetailsControllerSpec extends UnitSpec with MockStoreUserDetailsS
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
-
-  val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/store-user-details").withBody(
+  implicit val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/store-user-details").withBody(
     Json.toJson(testUserDetails)
   )
 
   "StoreUserDetailsController POST" should {
     "return No Content" when {
       "StoreUserDetailsService is successful" in {
-        mockStoreUserDetailsSuccess(testRequestId, testUserDetails)
+        mockStoreUserDetails(testRequestId, testUserDetails)(Future.successful(Right(UserDetailsStored)))
 
         val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
 
@@ -38,7 +39,7 @@ class StoreUserDetailsControllerSpec extends UnitSpec with MockStoreUserDetailsS
 
     "return Internal Server Error" when {
       "StoreUserDetailsService fails" in {
-        mockStoreUserDetailsFailure(testRequestId, testUserDetails)
+        mockStoreUserDetails(testRequestId, testUserDetails)(Future.successful(Left(DatabaseFailure)))
 
         val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
 
