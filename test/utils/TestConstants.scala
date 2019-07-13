@@ -18,6 +18,6 @@ object TestConstants {
 
   val testLoginDetails: LoginDetailsModel = LoginDetailsModel(testEmail, testPassword)
 
-  val testUserDetails: UserDetailsModel = UserDetailsModel(testRequestId, testFirstName, testLastName, testLoginDetails)
+  val testUserDetails: UserDetailsModel = UserDetailsModel(testFirstName, testLastName, testLoginDetails)
 
 }

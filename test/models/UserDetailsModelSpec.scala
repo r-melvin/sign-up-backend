@@ -9,7 +9,6 @@ class UserDetailsModelSpec extends PlaySpec {
   "UserDetailsModel" should {
 
     val testJson = Json.obj(
-      "_id" -> testRequestId,
       "firstName" -> testFirstName,
       "lastName" -> testLastName,
       "email" -> testEmail,
@@ -17,7 +16,7 @@ class UserDetailsModelSpec extends PlaySpec {
     )
 
     "contain 3 fields" in {
-      testUserDetails mustEqual UserDetailsModel(testRequestId, testFirstName, testLastName, testLoginDetails)
+      testUserDetails mustEqual UserDetailsModel(testFirstName, testLastName, testLoginDetails)
     }
 
     "write to json" in {

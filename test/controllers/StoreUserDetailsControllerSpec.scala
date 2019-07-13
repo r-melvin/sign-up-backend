@@ -22,9 +22,7 @@ class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsS
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
-  implicit val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/store-user-details").withBody(
-    Json.toJson(testUserDetails)
-  )
+  implicit val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/store-user-details").withBody(Json.toJson(testUserDetails))
 
   "StoreUserDetailsController POST" should {
     "return No Content" when {
