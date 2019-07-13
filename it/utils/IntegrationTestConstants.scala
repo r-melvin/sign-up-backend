@@ -6,18 +6,18 @@ import models.{LoginDetailsModel, UserDetailsModel}
 
 object IntegrationTestConstants {
 
-  val testFirstName = UUID.randomUUID().toString
+  val testFirstName: String = UUID.randomUUID().toString
 
-  val testLastName = UUID.randomUUID().toString
+  val testLastName: String = UUID.randomUUID().toString
 
-  val testId = UUID.randomUUID().toString
+  val testRequestId: String = UUID.randomUUID().toString
 
-  val testEmail = UUID.randomUUID().toString
+  val testEmail: String = UUID.randomUUID().toString
 
-  val testPassword = UUID.randomUUID().toString
+  val testPassword: String = UUID.randomUUID().toString
 
-  val testLoginDetails = LoginDetailsModel(testEmail, testPassword)
+  val testLoginDetails: LoginDetailsModel = LoginDetailsModel(testEmail, testPassword)
 
-  val testUserDetailsModel = UserDetailsModel(testFirstName, testLastName, testLoginDetails)
+  val testUserDetailsModel: UserDetailsModel = UserDetailsModel(testRequestId, testFirstName, testLastName, testLoginDetails)
 
 }

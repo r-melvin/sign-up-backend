@@ -1,13 +1,15 @@
 package utils
 
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
+import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSResponse}
 import play.api.{Application, Environment, Mode}
+import play.api.test.Helpers._
 
-trait IntegrationSpecBase extends TestMethods with WiremockHelper with GuiceOneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach {
+trait ComponentSpecBase extends PlaySpec with CustomMatchers with WiremockHelper with GuiceOneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
   lazy val ws = app.injector.instanceOf[WSClient]
 

@@ -5,7 +5,7 @@ import models.LoginDetailsModel
 import play.api.libs.json.{JsSuccess, JsValue}
 import play.api.mvc._
 import services.CheckLoginDetailsService
-import services.CheckLoginDetailsService.{LoginDetailsMatch, LoginDetailsDoNotMatch, LoginDetailsNotFound}
+import services.CheckLoginDetailsService.{LoginDetailsDoNotMatch, LoginDetailsMatch, LoginDetailsNotFound}
 
 import scala.concurrent.{ExecutionContext, Future}
 

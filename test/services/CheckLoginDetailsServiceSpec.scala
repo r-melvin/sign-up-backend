@@ -1,16 +1,19 @@
 package services
 
+import models.LoginDetailsModel
+import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import repositories.mocks.MockAccountsRepository
 import services.CheckLoginDetailsService._
 import utils.TestConstants._
-import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
-class CheckLoginDetailsServiceSpec extends UnitSpec with MockAccountsRepository {
+class CheckLoginDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
 
   object TestCheckLoginDetailsService extends CheckLoginDetailsService(mockAccountsRepository)
 
@@ -21,7 +24,7 @@ class CheckLoginDetailsServiceSpec extends UnitSpec with MockAccountsRepository 
 
     "return LoginDetailsMatch" when {
       "the provided details match those stored in mongo" in {
-        mockFindByIdSuccess(testRequestId, testJson)
+        mockFindById(testRequestId)(Future.successful(Some(testJson)))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
 
@@ -31,9 +34,9 @@ class CheckLoginDetailsServiceSpec extends UnitSpec with MockAccountsRepository 
 
     "return LoginDetailsDoNotMatch" when {
       "the provided details could not be found in mongo" in {
-        val testJson = Json.toJsObject(testInvalidLoginDetails)
+        val testJson = Json.toJsObject(LoginDetailsModel("", ""))
 
-        mockFindByIdSuccess(testRequestId, testJson)
+        mockFindById(testRequestId)(Future.successful(Some(testJson)))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
 
@@ -43,7 +46,7 @@ class CheckLoginDetailsServiceSpec extends UnitSpec with MockAccountsRepository 
 
     "return LoginDetailsNotFound" when {
       "the provided details could not be found in mongo" in {
-        mockFindByIdNotFoundFailure(testRequestId)
+        mockFindById(testRequestId)(Future.successful(None))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
 
@@ -53,7 +56,7 @@ class CheckLoginDetailsServiceSpec extends UnitSpec with MockAccountsRepository 
 
     "return DatabaseFailure" when {
       "the repository fails" in {
-        mockFindByIdFailure(testRequestId)
+        mockFindById(testRequestId)(Future.failed(new Exception))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testRequestId, testLoginDetails)
 

@@ -14,7 +14,7 @@ class AccountsRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)
                                   (implicit val ec: ExecutionContext) extends ReactiveMongoComponents {
 
   private def collection: Future[JSONCollection] = reactiveMongoApi.database map {
-    _.collection[JSONCollection]("sign-up")
+    _.collection[JSONCollection]("accounts")
   }
 
   def update(id: String, updates: JsObject): Future[UpdateWriteResult] = collection flatMap {
