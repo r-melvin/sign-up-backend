@@ -31,7 +31,7 @@ class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsS
 
         val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
 
-        status(result) mustBe NO_CONTENT
+        status(result) mustBe CREATED
       }
     }
 

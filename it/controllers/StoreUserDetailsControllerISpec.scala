@@ -16,7 +16,7 @@ class StoreUserDetailsControllerISpec extends ComponentSpecBase with TestAccount
       )(Json.toJson(testUserDetails))
 
       res must have {
-        httpStatus(NO_CONTENT)
+        httpStatus(CREATED)
       }
 
       val databaseRecord = await(accountsRepo.findById(testRequestId))

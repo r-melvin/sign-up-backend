@@ -19,7 +19,7 @@ class StoreUserDetailsController @Inject()(storeUserDetailsService: StoreUserDet
       request.body.validate[UserDetailsModel] match {
         case JsSuccess(userDetails, _) =>
           storeUserDetailsService.storeUserDetails(id, userDetails) map {
-            case Right(UserDetailsStored) => NoContent
+            case Right(UserDetailsStored) => Created
             case Left(_) => InternalServerError
           }
         case _ => Future.successful(BadRequest(request.body))
