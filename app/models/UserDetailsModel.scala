@@ -16,9 +16,9 @@ object UserDetailsModel {
   }
 
   implicit val writes: OWrites[UserDetailsModel] = (userDetails: UserDetailsModel) => Json.obj(
+    "email" -> userDetails.loginDetails.email,
     "firstName" -> userDetails.firstName,
     "lastName" -> userDetails.lastName,
-    "email" -> userDetails.loginDetails.email,
     "hashedPassword" -> userDetails.loginDetails.hashedPassword
   )
 }

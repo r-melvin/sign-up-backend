@@ -6,8 +6,6 @@ import models.{LoginDetailsModel, UserDetailsModel}
 
 object TestConstants {
 
-  val testRequestId: String = UUID.randomUUID().toString
-
   val testFirstName: String = UUID.randomUUID().toString
 
   val testLastName: String = UUID.randomUUID().toString

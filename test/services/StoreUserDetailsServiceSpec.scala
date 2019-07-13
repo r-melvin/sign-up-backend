@@ -21,11 +21,12 @@ class StoreUserDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
 
   "StoreUserDetailsService" should {
     val testJson: JsObject = Json.toJsObject(testUserDetails)
+    val email = testUserDetails.loginDetails.email
 
     "return UserDetailsStored" when {
       "the repository has successful stored the details in mongo" in {
-        mockInsert(testRequestId, testJson)(Future.successful(mock[WriteResult]))
-        val result = TestStoreUserDetailsService.storeUserDetails(testRequestId, testUserDetails)
+        mockInsert(email, testJson)(Future.successful(mock[WriteResult]))
+        val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
 
         await(result) mustBe Right(UserDetailsStored)
       }
@@ -33,9 +34,9 @@ class StoreUserDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
 
     "return DatabaseFailure" when {
       "the repository has failed" in {
-        mockInsert(testRequestId, testJson)(Future.failed(new Exception))
+        mockInsert(email, testJson)(Future.failed(new Exception))
 
-        val result = TestStoreUserDetailsService.storeUserDetails(testRequestId, testUserDetails)
+        val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
 
         await(result) mustBe Left(DatabaseFailure)
       }

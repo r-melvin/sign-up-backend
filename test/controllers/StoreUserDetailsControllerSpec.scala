@@ -27,9 +27,9 @@ class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsS
   "StoreUserDetailsController POST" should {
     "return No Content" when {
       "StoreUserDetailsService is successful" in {
-        mockStoreUserDetails(testRequestId, testUserDetails)(Future.successful(Right(UserDetailsStored)))
+        mockStoreUserDetails(testUserDetails)(Future.successful(Right(UserDetailsStored)))
 
-        val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
+        val result = TestStoreUserDetailsController.storeUserDetails()(testPostRequest)
 
         status(result) mustBe CREATED
       }
@@ -37,9 +37,9 @@ class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsS
 
     "return Internal Server Error" when {
       "StoreUserDetailsService fails" in {
-        mockStoreUserDetails(testRequestId, testUserDetails)(Future.successful(Left(DatabaseFailure)))
+        mockStoreUserDetails(testUserDetails)(Future.successful(Left(DatabaseFailure)))
 
-        val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
+        val result = TestStoreUserDetailsController.storeUserDetails()(testPostRequest)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -49,7 +49,7 @@ class StoreUserDetailsControllerSpec extends PlaySpec with MockStoreUserDetailsS
       "controller receives invalid JSON" in {
         val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/store-user-details").withBody(Json.obj())
 
-        val result = TestStoreUserDetailsController.storeUserDetails(testRequestId)(testPostRequest)
+        val result = TestStoreUserDetailsController.storeUserDetails()(testPostRequest)
 
         status(result) mustBe BAD_REQUEST
       }

@@ -14,11 +14,11 @@ class CheckLoginDetailsController @Inject()(checkLoginDetailsService: CheckLogin
                                             val controllerComponents: ControllerComponents
                                            )(implicit ec: ExecutionContext) extends BaseController {
 
-  def checkLoginDetails(id: String): Action[JsValue] = Action.async(parse.json) {
+  def checkLoginDetails(): Action[JsValue] = Action.async(parse.json) {
     implicit request =>
       request.body.validate[LoginDetailsModel] match {
         case JsSuccess(loginDetails, _) =>
-          checkLoginDetailsService.checkLoginDetails(id, loginDetails) map {
+          checkLoginDetailsService.checkLoginDetails(loginDetails) map {
             case Right(LoginDetailsMatch) => NoContent
             case Left(LoginDetailsDoNotMatch) => Forbidden
             case Left(LoginDetailsNotFound) => NotFound

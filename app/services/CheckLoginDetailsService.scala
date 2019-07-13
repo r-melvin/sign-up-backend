@@ -22,9 +22,9 @@ class CheckLoginDetailsService @Inject()(accountsRepository: AccountsRepository)
     }
   }
 
-  def checkLoginDetails(id: String, enteredLoginDetails: LoginDetailsModel)(implicit request: Request[_]): Future[CheckLoginDetailsResponse] = {
+  def checkLoginDetails(enteredLoginDetails: LoginDetailsModel)(implicit request: Request[_]): Future[CheckLoginDetailsResponse] = {
 
-    accountsRepository.findById(id) collect {
+    accountsRepository.findById(enteredLoginDetails.email) collect {
       case Some(result) => matchLoginDetails(enteredLoginDetails, Json.fromJson[LoginDetailsModel](result).get)
     } recover {
       case e: NoSuchElementException => Left(LoginDetailsNotFound)

@@ -12,9 +12,9 @@ trait MockCheckLoginDetailsService extends MockFactory {
 
   val mockCheckLoginDetailsService: CheckLoginDetailsService = mock[CheckLoginDetailsService]
 
-  def mockCheckLoginDetails(id: String, loginDetails: LoginDetailsModel)(response: Future[CheckLoginDetailsResponse]): Unit = {
-    (mockCheckLoginDetailsService.checkLoginDetails(_: String, _: LoginDetailsModel)(_: Request[_]))
-      .expects(id, loginDetails, *)
+  def mockCheckLoginDetails(loginDetails: LoginDetailsModel)(response: Future[CheckLoginDetailsResponse]): Unit = {
+    (mockCheckLoginDetailsService.checkLoginDetails(_: LoginDetailsModel)(_: Request[_]))
+      .expects(loginDetails, *)
       .returning(response)
   }
 

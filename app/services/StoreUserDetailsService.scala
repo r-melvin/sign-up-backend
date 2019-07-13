@@ -13,9 +13,9 @@ class StoreUserDetailsService @Inject()(accountsRepository: AccountsRepository)(
 
   import StoreUserDetailsService._
 
-  def storeUserDetails(id: String, userDetails: UserDetailsModel)(implicit request: Request[_]): Future[StoreUserDetailsResponse] = {
+  def storeUserDetails(userDetails: UserDetailsModel)(implicit request: Request[_]): Future[StoreUserDetailsResponse] = {
 
-    accountsRepository.insert(id, Json.toJsObject(userDetails)) map {
+    accountsRepository.insert(userDetails.loginDetails.email, Json.toJsObject(userDetails)) map {
       _ => Right(UserDetailsStored)
     } recover {
       case _ => Left(DatabaseFailure)

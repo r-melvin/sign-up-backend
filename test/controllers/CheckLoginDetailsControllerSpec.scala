@@ -22,6 +22,7 @@ class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetail
 
   implicit val system: ActorSystem = ActorSystem()
   implicit val materializer: ActorMaterializer = ActorMaterializer()
+
   implicit val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/check-login-details").withBody(
     Json.toJson(testLoginDetails)
   )
@@ -29,9 +30,9 @@ class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetail
   "CheckLoginDetailsController POST" should {
     "return No Content" when {
       "CheckLoginDetailsControllerService has found the details" in {
-        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Right(LoginDetailsMatch)))
+        mockCheckLoginDetails(testLoginDetails)(Future.successful(Right(LoginDetailsMatch)))
 
-        val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
+        val result = TestCheckLoginDetailsController.checkLoginDetails()(testPostRequest)
 
         status(result) mustBe NO_CONTENT
       }
@@ -39,9 +40,9 @@ class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetail
 
     "return Forbidden" when {
       "CheckLoginDetailsControllerService has found the details and the details do not match" in {
-        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Left(LoginDetailsDoNotMatch)))
+        mockCheckLoginDetails(testLoginDetails)(Future.successful(Left(LoginDetailsDoNotMatch)))
 
-        val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
+        val result = TestCheckLoginDetailsController.checkLoginDetails()(testPostRequest)
 
         status(result) mustBe FORBIDDEN
       }
@@ -49,9 +50,9 @@ class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetail
 
     "return Not Found" when {
       "CheckLoginDetailsControllerService has not found the details" in {
-        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Left(LoginDetailsNotFound)))
+        mockCheckLoginDetails(testLoginDetails)(Future.successful(Left(LoginDetailsNotFound)))
 
-        val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
+        val result = TestCheckLoginDetailsController.checkLoginDetails()(testPostRequest)
 
         status(result) mustBe NOT_FOUND
       }
@@ -59,9 +60,9 @@ class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetail
 
     "return Internal Server Error" when {
       "CheckLoginDetailsControllerService fails" in {
-        mockCheckLoginDetails(testRequestId, testLoginDetails)(Future.successful(Left(DatabaseFailure)))
+        mockCheckLoginDetails(testLoginDetails)(Future.successful(Left(DatabaseFailure)))
 
-        val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
+        val result = TestCheckLoginDetailsController.checkLoginDetails()(testPostRequest)
 
         status(result) mustBe INTERNAL_SERVER_ERROR
       }
@@ -71,7 +72,7 @@ class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetail
       "controller receives invalid JSON" in {
         val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/check-login-details").withBody(Json.obj())
 
-        val result = TestCheckLoginDetailsController.checkLoginDetails(testRequestId)(testPostRequest)
+        val result = TestCheckLoginDetailsController.checkLoginDetails()(testPostRequest)
 
         status(result) mustBe BAD_REQUEST
       }
