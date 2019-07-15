@@ -1,7 +1,6 @@
 import play.sbt.PlayImport.guice
 import sbt._
 
-
 object AppDependencies {
 
   val compile = Seq(
@@ -11,7 +10,6 @@ object AppDependencies {
 
   val test = Seq(
     "org.scalamock" %% "scalamock" % "4.3.0" % "test",
-    "org.mockito" % "mockito-core" % "3.0.0" % "test",
     "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % "test, it",
     "com.github.tomakehurst" % "wiremock-jre8" % "2.23.2" % "it"
   )

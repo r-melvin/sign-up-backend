@@ -5,7 +5,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
+import reactivemongo.api.commands.UpdateWriteResult
 import repositories.mocks.MockAccountsRepository
 import services.StoreUserDetailsService._
 import utils.TestConstants._
@@ -25,7 +25,7 @@ class StoreUserDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
 
     "return UserDetailsStored" when {
       "the repository has successful stored the details in mongo" in {
-        mockInsert(email, testJson)(Future.successful(mock[WriteResult]))
+        mockInsert(email, testJson)(Future.successful(mock[UpdateWriteResult]))
         val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
 
         await(result) mustBe Right(UserDetailsStored)

@@ -2,7 +2,7 @@ package repositories
 
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{JsObject, Json}
-import play.modules.reactivemongo.{ReactiveMongoApi, ReactiveMongoComponents}
+import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.play.json.JsObjectDocumentWriter
 import reactivemongo.play.json.collection.JSONCollection
@@ -11,9 +11,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class AccountsRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)
-                                  (implicit val ec: ExecutionContext) extends ReactiveMongoComponents {
+                                  (implicit ec: ExecutionContext) {
 
-  val idKey = "_id"
+  private val idKey = "_id"
 
   private def collection: Future[JSONCollection] = reactiveMongoApi.database map {
     _.collection[JSONCollection]("accounts")
