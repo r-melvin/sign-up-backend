@@ -18,9 +18,9 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     dependencyOverrides ++= AppDependencies.overrides,
     scoverageSettings,
-    Defaults.itSettings,
     PlayKeys.playDefaultPort := 9001
   )
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
 
 Keys.fork in Test := true
 javaOptions in Test += "-Dlogger.resource=logback.xml"

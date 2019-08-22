@@ -1,8 +1,7 @@
 package services
 
-import models.LoginDetailsModel
+import models.{LoginDetailsModel, UserDetailsModel}
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -20,12 +19,11 @@ class CheckLoginDetailsServiceSpec extends PlaySpec with MockAccountsRepository 
   implicit val request: Request[_] = FakeRequest()
 
   "CheckLoginDetailsService" should {
-    val testJson: JsObject = Json.toJsObject(testLoginDetails)
     val email = testLoginDetails.email
 
     "return LoginDetailsMatch" when {
       "the provided details match those stored in mongo" in {
-        mockFindById(email)(Future.successful(Some(testJson)))
+        mockFindById(email)(Future.successful(Some(testUserDetails)))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
 
@@ -35,9 +33,9 @@ class CheckLoginDetailsServiceSpec extends PlaySpec with MockAccountsRepository 
 
     "return LoginDetailsDoNotMatch" when {
       "the provided details could not be found in mongo" in {
-        val testJson = Json.toJsObject(LoginDetailsModel("", ""))
+        val testData = UserDetailsModel(testFirstName, testLastName, LoginDetailsModel("", ""))
 
-        mockFindById(email)(Future.successful(Some(testJson)))
+        mockFindById(email)(Future.successful(Some(testData)))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
 
@@ -47,7 +45,7 @@ class CheckLoginDetailsServiceSpec extends PlaySpec with MockAccountsRepository 
 
     "return LoginDetailsNotFound" when {
       "the provided details could not be found in mongo" in {
-        mockFindById(email)(Future.successful(None))
+        mockFindById[UserDetailsModel](email)(Future.successful(None))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
 
@@ -57,7 +55,7 @@ class CheckLoginDetailsServiceSpec extends PlaySpec with MockAccountsRepository 
 
     "return DatabaseFailure" when {
       "the repository fails" in {
-        mockFindById(email)(Future.failed(new Exception))
+        mockFindById[UserDetailsModel](email)(Future.failed(new Exception))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
 

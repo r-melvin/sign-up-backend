@@ -1,7 +1,7 @@
 package controllers
 
 import models.UserDetailsModel
-import play.api.libs.json.{JsSuccess, Json}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import utils.IntegrationTestConstants.testUserDetails
 import utils.{ComponentSpecBase, TestAccountsRepository}
@@ -18,8 +18,8 @@ class StoreUserDetailsControllerISpec extends ComponentSpecBase with TestAccount
         httpStatus(CREATED)
       }
 
-      val databaseRecord = await(accountsRepo.findById(testUserDetails.loginDetails.email))
-      Json.fromJson[UserDetailsModel](databaseRecord.get) mustEqual JsSuccess(testUserDetails)
+      val databaseRecord = await(accountsRepo.findById[UserDetailsModel](testUserDetails.loginDetails.email))
+      databaseRecord mustBe Some(testUserDetails)
 
     }
   }
