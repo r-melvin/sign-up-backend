@@ -2,7 +2,6 @@ package services
 
 import javax.inject.{Inject, Singleton}
 import models.UserDetailsModel
-import play.api.libs.json.Json
 import play.api.mvc.Request
 import repositories.AccountsRepository
 
@@ -15,7 +14,7 @@ class StoreUserDetailsService @Inject()(accountsRepository: AccountsRepository)(
 
   def storeUserDetails(userDetails: UserDetailsModel)(implicit request: Request[_]): Future[StoreUserDetailsResponse] = {
 
-    accountsRepository.insert(userDetails.loginDetails.email, Json.toJsObject(userDetails)) map {
+    accountsRepository.insert[UserDetailsModel](userDetails.loginDetails.email, userDetails) map {
       _ => Right(UserDetailsStored)
     } recover {
       case _ => Left(DatabaseFailure)

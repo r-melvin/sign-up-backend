@@ -1,17 +1,17 @@
 import play.sbt.PlayImport.guice
-import sbt._
+import sbt.{ModuleID, _}
 
 object AppDependencies {
 
   val compile = Seq(
     guice,
-    "org.reactivemongo" %% "play2-reactivemongo" % "0.18.1-play27"
+    "org.reactivemongo" %% "play2-reactivemongo" % "0.18.4-play27"
   )
 
   val test = Seq(
     "org.scalamock" %% "scalamock" % "4.3.0" % "test",
     "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % "test, it",
-    "com.github.tomakehurst" % "wiremock-jre8" % "2.23.2" % "it"
+    "com.github.tomakehurst" % "wiremock-jre8" % "2.24.1" % "it"
   )
 
   val overrides: Seq[ModuleID] = {

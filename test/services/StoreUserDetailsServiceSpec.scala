@@ -1,7 +1,6 @@
 package services
 
 import org.scalatestplus.play.PlaySpec
-import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -20,12 +19,11 @@ class StoreUserDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
   implicit val request: Request[_] = FakeRequest()
 
   "StoreUserDetailsService" should {
-    val testJson: JsObject = Json.toJsObject(testUserDetails)
     val email = testUserDetails.loginDetails.email
 
     "return UserDetailsStored" when {
       "the repository has successful stored the details in mongo" in {
-        mockInsert(email, testJson)(Future.successful(mock[UpdateWriteResult]))
+        mockInsert(email, testUserDetails)(Future.successful(mock[UpdateWriteResult]))
         val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
 
         await(result) mustBe Right(UserDetailsStored)
@@ -34,7 +32,7 @@ class StoreUserDetailsServiceSpec extends PlaySpec with MockAccountsRepository {
 
     "return DatabaseFailure" when {
       "the repository has failed" in {
-        mockInsert(email, testJson)(Future.failed(new Exception))
+        mockInsert(email, testUserDetails)(Future.failed(new Exception))
 
         val result = TestStoreUserDetailsService.storeUserDetails(testUserDetails)
 

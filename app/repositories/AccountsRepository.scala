@@ -1,7 +1,7 @@
 package repositories
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, Json, OFormat}
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.play.json.JsObjectDocumentWriter
@@ -19,22 +19,23 @@ class AccountsRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)
     _.collection[JSONCollection]("accounts")
   }
 
-  def update(id: String, updates: JsObject): Future[UpdateWriteResult] = collection flatMap {
-    _.update(ordered = true).one(
+  def update[A](id: String, key: String, updates: A)(implicit format: OFormat[A]): Future[UpdateWriteResult] = collection flatMap {
+    _.update(ordered = false).one(
       q = Json.obj(idKey -> id),
-      u = updates
-    )
+      u = Json.obj(fields = "$set" -> Json.obj(key -> updates)),
+      upsert = false
+    ) filter (_.n == 1)
   }
 
-  def insert(id: String, json: JsObject): Future[WriteResult] = collection flatMap {
-    _.insert.one(Json.obj(idKey -> id) ++ json)
+  def insert[A](id: String, value: A)(implicit format: OFormat[A]): Future[WriteResult] = collection flatMap {
+    _.insert.one(Json.obj(idKey -> id) ++ Json.toJsObject(value))
   }
 
-  def findById(id: String): Future[Option[JsObject]] = collection flatMap {
-    _.find(
+  def findById[A](id: String)(implicit format: OFormat[A]): Future[Option[A]] = collection flatMap {
+    _.find[JsObject, A](
       selector = Json.obj(idKey -> id),
       projection = None
-    ).one[JsObject]
+    ).one[A]
   }
 
   def delete(id: String): Future[WriteResult] = collection flatMap {

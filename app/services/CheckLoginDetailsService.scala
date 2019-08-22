@@ -1,8 +1,7 @@
 package services
 
 import javax.inject.{Inject, Singleton}
-import models.LoginDetailsModel
-import play.api.libs.json.Json
+import models.{LoginDetailsModel, UserDetailsModel}
 import play.api.mvc.Request
 import repositories.AccountsRepository
 
@@ -13,21 +12,13 @@ class CheckLoginDetailsService @Inject()(accountsRepository: AccountsRepository)
 
   import CheckLoginDetailsService._
 
-  private def matchLoginDetails(enteredLoginDetails: LoginDetailsModel, retrievedLoginDetails: LoginDetailsModel): CheckLoginDetailsResponse = {
-    if (retrievedLoginDetails == enteredLoginDetails) {
-      Right(LoginDetailsMatch)
-    }
-    else {
-      Left(LoginDetailsDoNotMatch)
-    }
-  }
-
   def checkLoginDetails(enteredLoginDetails: LoginDetailsModel)(implicit request: Request[_]): Future[CheckLoginDetailsResponse] = {
 
-    accountsRepository.findById(enteredLoginDetails.email) collect {
-      case Some(result) => matchLoginDetails(enteredLoginDetails, Json.fromJson[LoginDetailsModel](result).get)
+    accountsRepository.findById[UserDetailsModel](enteredLoginDetails.email) map {
+      case Some(result) if result.loginDetails == enteredLoginDetails => Right(LoginDetailsMatch)
+      case Some(_) => Left(LoginDetailsDoNotMatch)
+      case None => Left(LoginDetailsNotFound)
     } recover {
-      case e: NoSuchElementException => Left(LoginDetailsNotFound)
       case _ => Left(DatabaseFailure)
     }
   }
