@@ -1,5 +1,7 @@
 val appName = "sign-up-backend"
 
+scalaVersion := "2.13.0"
+
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
 

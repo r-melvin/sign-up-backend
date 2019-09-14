@@ -8,7 +8,7 @@ POST /sign-up/check-login-details/
   - Endpoint which checks that the user's email and password exist in Mongo
 
 # Not Implemented Yet
-GET /sign-up/retrieve-user-details/
+GET /sign-up/retrieve-user-details/:email
   - Endpoint to retrieve user details from Mongo for the account page in the frontend
   
 POST /sign-up/amend-user-details/
@@ -18,6 +18,6 @@ DELETE /sign-up/remove-user-details/
   - Endpoint to delete user details from Mongo
 
 # About
-This is a backend microservice built with Scala using the Play Framework & ReactiveMongo
+This is a backend microservice built with Scala using the Play 2.7 Framework & ReactiveMongo 18.6
 
 To run locally, use command `sbt "run 9001"`
