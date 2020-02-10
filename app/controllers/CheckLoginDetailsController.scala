@@ -27,4 +27,5 @@ class CheckLoginDetailsController @Inject()(checkLoginDetailsService: CheckLogin
         case _ => Future.successful(BadRequest(request.body))
       }
   }
+
 }

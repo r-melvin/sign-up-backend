@@ -4,7 +4,7 @@ import org.scalamock.handlers.{CallHandler2, CallHandler3, CallHandler4}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.Suite
 import play.api.libs.json.OFormat
-import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
+import reactivemongo.api.commands.WriteResult
 import repositories.AccountsRepository
 
 import scala.concurrent.Future
@@ -22,8 +22,8 @@ trait MockAccountsRepository extends MockFactory {
       .returning(response)
 
   def mockUpdate[A](id: String, key: String, value: A)
-                   (response: Future[UpdateWriteResult])
-                   (implicit format: OFormat[A]): CallHandler4[String, String, A, OFormat[A], Future[UpdateWriteResult]] =
+                   (response: Future[WriteResult])
+                   (implicit format: OFormat[A]): CallHandler4[String, String, A, OFormat[A], Future[WriteResult]] =
     (mockAccountsRepository.update(_: String, _: String, _: A)(_: OFormat[A]))
       .expects(id, key, value, format)
       .returning(response)

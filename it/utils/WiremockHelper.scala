@@ -3,14 +3,15 @@ package utils
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 
 object WiremockHelper extends Eventually with IntegrationPatience {
 
-  val wiremockPort = 11111
-  val wiremockHost = "localhost"
+  val wiremockPort: Int = 11111
+  val wiremockHost: String = "localhost"
 
   def stubGet(url: String, status: Integer, body: String): StubMapping =
     stubFor(get(urlMatching(url))
@@ -47,14 +48,15 @@ object WiremockHelper extends Eventually with IntegrationPatience {
           withBody(responseBody)
       )
     )
+
 }
 
 trait WiremockHelper {
 
   import WiremockHelper._
 
-  lazy val wmConfig = wireMockConfig().port(wiremockPort)
-  lazy val wireMockServer = new WireMockServer(wmConfig)
+  lazy val wmConfig: WireMockConfiguration = wireMockConfig().port(wiremockPort)
+  lazy val wireMockServer: WireMockServer = new WireMockServer(wmConfig)
 
   def startWiremock(): Unit = {
     wireMockServer.start()
@@ -64,5 +66,6 @@ trait WiremockHelper {
   def stopWiremock(): Unit = wireMockServer.stop()
 
   def resetWiremock(): Unit = WireMock.reset()
+
 }
 
