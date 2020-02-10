@@ -5,22 +5,22 @@ import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
-import play.api.libs.ws.{WSClient, WSResponse}
+import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.{Application, Environment, Mode}
 import play.api.test.Helpers._
 
 trait ComponentSpecBase extends PlaySpec with CustomMatchers with WiremockHelper with GuiceOneServerPerSuite with BeforeAndAfterAll with BeforeAndAfterEach {
 
-  lazy val ws = app.injector.instanceOf[WSClient]
+  lazy val ws: WSClient = app.injector.instanceOf[WSClient]
 
   override implicit lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(config)
     .build
 
-  val mockHost = WiremockHelper.wiremockHost
-  val mockPort = WiremockHelper.wiremockPort.toString
-  val mockUrl = s"http://$mockHost:$mockPort"
+  val mockHost: String = WiremockHelper.wiremockHost
+  val mockPort: String = WiremockHelper.wiremockPort.toString
+  val mockUrl: String = s"http://$mockHost:$mockPort"
 
   def config: Map[String, String] = Map(
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
@@ -69,6 +69,6 @@ trait ComponentSpecBase extends PlaySpec with CustomMatchers with WiremockHelper
 
   val baseUrl: String = "/sign-up"
 
-  def buildClient(path: String) = ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
+  def buildClient(path: String): WSRequest = ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
 
 }

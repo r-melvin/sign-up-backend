@@ -13,8 +13,7 @@ class CheckLoginDetailsService @Inject()(accountsRepository: AccountsRepository)
   import CheckLoginDetailsService._
 
   def checkLoginDetails(enteredLoginDetails: LoginDetailsModel)(implicit request: Request[_]): Future[CheckLoginDetailsResponse] = {
-
-    accountsRepository.findById[UserDetailsModel](enteredLoginDetails.email) map {
+    accountsRepository.findById[UserDetailsModel](enteredLoginDetails.email).map{
       case Some(result) if result.loginDetails == enteredLoginDetails => Right(LoginDetailsMatch)
       case Some(_) => Left(LoginDetailsDoNotMatch)
       case None => Left(LoginDetailsNotFound)

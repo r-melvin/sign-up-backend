@@ -9,8 +9,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class AccountsRepositoryISpec extends ComponentSpecBase with TestAccountsRepository {
 
-  val idKey = "_id"
-
   val email: String = testUserDetails.loginDetails.email
 
   "insert" should {
@@ -59,7 +57,7 @@ class AccountsRepositoryISpec extends ComponentSpecBase with TestAccountsReposit
     }
 
     "return None" when {
-      "the document does not exist" in{
+      "the document does not exist" in {
         val res = await(accountsRepo.findById[UserDetailsModel](testEmail))
 
         res mustBe None

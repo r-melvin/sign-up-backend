@@ -5,6 +5,7 @@ import play.api.libs.json.Reads
 import play.api.libs.ws.WSResponse
 
 trait CustomMatchers {
+
   def httpStatus(expectedValue: Int): HavePropertyMatcher[WSResponse, Int] =
     (response: WSResponse) => HavePropertyMatchResult(
       response.status == expectedValue,
@@ -28,4 +29,5 @@ trait CustomMatchers {
       "",
       response.body
     )
+
 }

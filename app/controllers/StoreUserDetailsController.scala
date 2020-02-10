@@ -25,4 +25,5 @@ class StoreUserDetailsController @Inject()(storeUserDetailsService: StoreUserDet
         case _ => Future.successful(BadRequest(request.body))
       }
   }
+
 }

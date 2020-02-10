@@ -1,6 +1,6 @@
-val appName = "sign-up-backend"
+val appName = "sign-up"
 
-scalaVersion := "2.13.0"
+scalaVersion := "2.13.1"
 
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
@@ -18,7 +18,6 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    dependencyOverrides ++= AppDependencies.overrides,
     scoverageSettings,
     PlayKeys.playDefaultPort := 9001
   )
