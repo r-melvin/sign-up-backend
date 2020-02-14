@@ -10,8 +10,7 @@ import reactivemongo.play.json.collection.JSONCollection
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class AccountsRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)
-                                  (implicit ec: ExecutionContext) {
+class AccountsRepository @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) {
 
   private val idKey = "_id"
 

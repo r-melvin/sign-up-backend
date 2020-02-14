@@ -23,7 +23,7 @@ class CheckLoginDetailsServiceSpec extends PlaySpec with MockAccountsRepository 
 
     "return LoginDetailsMatch" when {
       "the provided details match those stored in mongo" in {
-        mockFindById(email)(Future.successful(Some(testUserDetails)))
+        mockFindById[UserDetailsModel](email)(Future.successful(Some(testUserDetails)))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
 
@@ -35,7 +35,7 @@ class CheckLoginDetailsServiceSpec extends PlaySpec with MockAccountsRepository 
       "the provided details could not be found in mongo" in {
         val testData = UserDetailsModel(testFirstName, testLastName, LoginDetailsModel("", ""))
 
-        mockFindById(email)(Future.successful(Some(testData)))
+        mockFindById[UserDetailsModel](email)(Future.successful(Some(testData)))
 
         val result = TestCheckLoginDetailsService.checkLoginDetails(testLoginDetails)
 
