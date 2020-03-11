@@ -11,11 +11,8 @@ class UserDetailsModelSpec extends PlaySpec {
     val testJson = Json.obj(
       "firstName" -> testFirstName,
       "lastName" -> testLastName,
-      "loginDetails" ->
-        Json.obj(
-          "email" -> testEmail,
-          "hashedPassword" -> testPassword
-        )
+      "email" -> testEmail,
+      "hashedPassword" -> testPassword
     )
 
     "contain 3 fields" in {

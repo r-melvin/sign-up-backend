@@ -1,7 +1,6 @@
 package controllers
 
 import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.json.{JsValue, Json}
 import play.api.test.Helpers._
@@ -21,13 +20,12 @@ class CheckLoginDetailsControllerSpec extends PlaySpec with MockCheckLoginDetail
   )
 
   implicit val system: ActorSystem = ActorSystem()
-  implicit val materializer: ActorMaterializer = ActorMaterializer()
 
   implicit val testPostRequest: FakeRequest[JsValue] = FakeRequest(POST, "/sign-up/check-login-details").withBody(
     Json.toJson(testLoginDetails)
   )
 
-  "CheckLoginDetailsController POST" should {
+  "CheckLoginDetailsController" should {
     "return No Content" when {
       "CheckLoginDetailsControllerService has found the details" in {
         mockCheckLoginDetails(testLoginDetails)(Future.successful(Right(LoginDetailsMatch)))
