@@ -6,6 +6,23 @@ case class UserDetailsModel(firstName: String, lastName: String, loginDetails: L
 
 object UserDetailsModel {
 
-  implicit val format: OFormat[UserDetailsModel] = Json.format[UserDetailsModel]
+  val reader: Reads[UserDetailsModel] = (json: JsValue) => {
+    val firstName: String = (json \ "firstName").as[String]
+    val lastName: String = (json \ "lastName").as[String]
+    val email: String = (json \ "email").as[String]
+    val hashedPassword: String = (json \ "hashedPassword").as[String]
+
+    JsSuccess(UserDetailsModel(firstName, lastName, LoginDetailsModel(email, hashedPassword)))
+  }
+
+  val writer: OWrites[UserDetailsModel] = (userDetails: UserDetailsModel) => {
+    Json.obj("firstName" -> userDetails.firstName,
+      "lastName" -> userDetails.lastName,
+      "email" -> userDetails.loginDetails.email,
+      "hashedPassword" -> userDetails.loginDetails.hashedPassword
+    )
+  }
+
+  implicit val format: OFormat[UserDetailsModel] = OFormat[UserDetailsModel](reader, writer)
 
 }

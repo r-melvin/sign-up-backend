@@ -8,6 +8,7 @@ import services.CheckLoginDetailsService
 import services.CheckLoginDetailsService.{LoginDetailsDoNotMatch, LoginDetailsMatch, LoginDetailsNotFound}
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
 class CheckLoginDetailsController @Inject()(checkLoginDetailsService: CheckLoginDetailsService,
@@ -16,8 +17,8 @@ class CheckLoginDetailsController @Inject()(checkLoginDetailsService: CheckLogin
 
   def checkLoginDetails(): Action[JsValue] = Action.async(parse.json) {
     implicit request =>
-      request.body.validate[LoginDetailsModel] match {
-        case JsSuccess(loginDetails, _) =>
+      Try(request.body.as[LoginDetailsModel]).toOption match {
+        case Some(loginDetails) =>
           checkLoginDetailsService.checkLoginDetails(loginDetails) map {
             case Right(LoginDetailsMatch) => NoContent
             case Left(LoginDetailsDoNotMatch) => Forbidden
@@ -29,3 +30,4 @@ class CheckLoginDetailsController @Inject()(checkLoginDetailsService: CheckLogin
   }
 
 }
+

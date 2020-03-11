@@ -8,6 +8,7 @@ import services.StoreUserDetailsService
 import services.StoreUserDetailsService.UserDetailsStored
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 @Singleton
 class StoreUserDetailsController @Inject()(storeUserDetailsService: StoreUserDetailsService,
@@ -16,8 +17,8 @@ class StoreUserDetailsController @Inject()(storeUserDetailsService: StoreUserDet
 
   def storeUserDetails(): Action[JsValue] = Action.async(parse.json) {
     implicit request =>
-      request.body.validate[UserDetailsModel] match {
-        case JsSuccess(userDetails, _) =>
+      Try(request.body.as[UserDetailsModel]).toOption match {
+        case Some(userDetails) =>
           storeUserDetailsService.storeUserDetails(userDetails) map {
             case Right(UserDetailsStored) => Created
             case Left(_) => InternalServerError
